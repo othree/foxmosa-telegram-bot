@@ -34,7 +34,7 @@ var updateHandler = function (data) {
       let message = update.message;
       let chat = message.chat;
       if (chat.id !== chat_id) { continue; }
-      let author = message.from;
+      let author = `${message.from.first_name} ${message.from.last_name}`;
       let text = message.text;
       if (!text) { continue; }
 
