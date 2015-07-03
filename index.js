@@ -28,7 +28,7 @@ var updateHandler = function (data) {
     // console.log(JSON.stringify(value, null, 2));
     for (let update of value.result) {
       if (update.update_id < lower) { continue; }
-      if (update.update_id > offset) {
+      if (update.update_id >= offset) {
         offset = update.update_id + 1;
       }
       let message = update.message;
