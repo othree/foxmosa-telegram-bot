@@ -18,7 +18,6 @@
   "homepage": "https://github.com/othree/foxmosa-telegram-bot#readme",
   "dependencies": {
     "fetch-er": "0.0.10",
-    "jsonfile": "^2.2.1",
-    "node-fetch": "^1.3.0"
+    "jsonfile": "^2.2.1"
   }
 }

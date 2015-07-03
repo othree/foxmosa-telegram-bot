@@ -1,6 +1,5 @@
 var jsonfile = require('jsonfile');
 var util = require('util');
-var fetch = require('node-fetch');
 var fetcher = require('fetch-er');
 
 var token = jsonfile.readFileSync('token.json');
