@@ -25,7 +25,7 @@ var updateHandler = function (data) {
   var value = data[0];
   var lower = offset;
   if (value.ok) {
-    console.log('fetch update', offset)
+    console.log((new Date()).getTime(), 'fetch update', offset)
     // console.log(JSON.stringify(value, null, 2));
     for (let update of value.result) {
       if (update.update_id < lower) { continue; }
@@ -42,7 +42,7 @@ var updateHandler = function (data) {
       if (/mosa/.test(text)) {
         sendSticker();
       }
-      console.log(author, text);
+      console.log((new Date()).getTime(), update.update_id, author, text);
     }
   } else {
   }
