@@ -13,6 +13,11 @@ var baseurl = `${entrypoint}${token}/`;
 var getUpdateBase = `${baseurl}getUpdates`;
 var sendStickerBase = `${baseurl}sendSticker`;
 
+var knex = require('knex')({
+  client: 'mysql',
+  connection: jsonfile.readFileSync('db.json')
+});
+
 var offset = 0;
 
 try {
@@ -24,6 +29,7 @@ var updateHandler = function (data) {
   var value = data[0];
   var lower = offset;
   if (value.ok) {
+    var records = [];
     console.log((new Date()).getTime(), 'fetch update', offset)
     // console.log(JSON.stringify(value, null, 2));
     for (let update of value.result) {
@@ -34,14 +40,27 @@ var updateHandler = function (data) {
       let message = update.message;
       let chat = message.chat;
       if (chat.id !== chat_id) { continue; }
-      let author = `${message.from.first_name} ${message.from.last_name}`;
+      let author = `${message.from.first_name || ''} ${message.from.last_name || ''}`.trim();
       let text = message.text;
       if (!text) { continue; }
 
       if (/mosa/.test(text)) {
         sendSticker();
       }
-      console.log((new Date()).getTime(), update.update_id, author, text);
+      // console.log((new Date()).getTime(), update.update_id, author, text);
+      records.push({
+        channel: 'moztw-telegram',
+        name: author,
+        time: (new Date(message.date)).toISOString().slice(0, 19).replace('T', ' '),
+        message: text,
+        type: 'pubmsg',
+        hidden: 'F'
+      });
+    }
+    if (records.length) {
+      knex('main').insert(records).then(function () {
+      });
+      jsonfile.writeFile('offset', offset);
     }
   } else {
   }
