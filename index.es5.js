@@ -66,7 +66,7 @@ var updateHandler = function updateHandler(data) {
         records.push({
           channel: 'moztw-telegram',
           name: author,
-          time: new Date(message.date).toISOString().slice(0, 19).replace('T', ' '),
+          time: new Date(message.date * 1000).toISOString().slice(0, 19).replace('T', ' '),
           message: text,
           type: 'pubmsg',
           hidden: 'F'
