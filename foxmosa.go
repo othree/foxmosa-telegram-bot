@@ -8,9 +8,19 @@ import (
 
 func main() {
 
-  result := telegramapi.GetUpdates(config.API_KEY)
+  offsetChannel := make(chan int)
+  updateChannel := telegramapi.MakeUpdatesChannel()
+  go telegramapi.TrackingUpdates(updateChannel, offsetChannel, config.API_KEY)
 
-  for _, update := range result.Result {
-    fmt.Printf("%d, %s: %s\n", update.UpdateID, update.Message.From.Username, update.Message.Text)
+  var offset int = 0
+  offsetChannel<-offset
+
+  for updateResult := range updateChannel {
+    for _, update  := range updateResult.Result {
+      fmt.Printf("%d, %s: %s\n", update.UpdateID, update.Message.From.Username, update.Message.Text)
+      offset = update.UpdateID + 1
+    }
+    offsetChannel<-offset
   }
+
 }
