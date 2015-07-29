@@ -34,7 +34,7 @@ type UpdateResult struct {
         ID int `json:"id"`
         Title string `json:"title"`
       } `json:"chat"`
-      Date int `json:"date"`
+      Date int64 `json:"date"`
       Text string `json:"text"`
     } `json:"message"`
   } `json:"result"`
