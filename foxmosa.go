@@ -54,6 +54,13 @@ func main() {
   go telegramapi.TrackingUpdates(updateChannel, offsetChannel, config.API_KEY)
 
   var offset int = 0
+  data, err := ioutil.ReadFile("offset")
+  if err == nil {
+    offset, err = strconv.Atoi(string(data))
+    if err != nil {
+      offset = 0
+    }
+  }
   offsetChannel<-offset
   go offsetWriter(offsetWriterChannel)
 
@@ -67,7 +74,7 @@ func main() {
       tm := time.Unix(update.Message.Date, 0)
       fmt.Printf("%d, %s: %s\n", update.UpdateID, name, update.Message.Text)
       offset = update.UpdateID + 1
-      msg := Message{name, tm.Format("%Y-%m-%d %H:%M:%S"), update.Message.Text}
+      msg := Message{name, tm.Format("2006-01-02 15:04:05"), update.Message.Text}
       messageChannel<-msg
     }
     offsetWriterChannel<-offset
