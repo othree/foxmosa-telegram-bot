@@ -1,8 +1,0 @@
-package config
-
-const API_KEY string = ""
-
-const DB_HOST string = ""
-const DB_USER string = ""
-const DB_PASS string = ""
-const DB_BASE string = ""
