@@ -33,6 +33,18 @@ type Update struct {
       Title string `json:"title"`
     } `json:"chat"`
     Date int64 `json:"date"`
+    Document struct {
+      FileName string `json:"file_name"`
+      MimeType string `json:"mime_type"`
+      Thumb struct {
+        FileID string `json:"file_id"`
+        FileSize int `json:"file_size"`
+        Width int `json:"width"`
+        Height int `json:"height"`
+      } `json:"thumb"`
+      FileID string `json:"file_id"`
+      FileSize int `json:"file_size"`
+    } `json:"document"`
     Text string `json:"text"`
     Photo []struct {
       FileID string `json:"file_id"`
