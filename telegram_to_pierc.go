@@ -34,10 +34,12 @@ func telegram_to_pierc(updateChannel <-chan *telegramapi.Update, messageChannel 
         text = "[sticker]"
       }
     }
-    tm := time.Unix(update.Message.Date, 0).Format("2006-01-02 15:04:05")
-    fmt.Printf("[%d] %s %s: %s\n", update.UpdateID, tm, name, text)
-    msg := pierc.Message{name, tm, text}
-    messageChannel<-&msg
+    if text != "" {
+      tm := time.Unix(update.Message.Date, 0).Format("2006-01-02 15:04:05")
+      fmt.Printf("[%d] %s %s: %s\n", update.UpdateID, tm, name, text)
+      msg := pierc.Message{name, tm, text}
+      messageChannel<-&msg
+    }
   }
 }
 
