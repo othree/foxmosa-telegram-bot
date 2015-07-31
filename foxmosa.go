@@ -3,8 +3,8 @@ package main
 import (
   "./telegramapi"
   "./pierc"
+  "github.com/othree/noemoji"
   "github.com/vaughan0/go-ini"
-  "unicode/utf8"
   "io/ioutil"
   "strconv"
   "strings"
@@ -20,18 +20,6 @@ func offsetWriter(oc <-chan int) {
     }
   }
 }
-
-// http://maiyang.github.io/golang/%E5%AD%97%E7%AC%A6%E4%B8%B2/emoji/%E8%A1%A8%E6%83%85/2015/06/16/golang-character-length/
-func FilterEmoji(content string) string {
-    new_content := ""
-    for _, value := range content {
-        _, size := utf8.DecodeRuneInString(string(value))
-        if size <= 3 {
-            new_content += string(value)
-        }
-    }
-    return new_content
-  }
 
 func main() {
 
@@ -80,14 +68,15 @@ func main() {
   for updateResult := range updateChannel {
     for _, update  := range updateResult.Result {
       author := update.Message.From
-      name := strings.Join([]string{author.FirstName, author.LastName}, " ")
+      name := strings.TrimSpace(strings.Join([]string{author.FirstName, author.LastName}, " "))
+      text := noemoji.Noemojitize(update.Message.Text)
       if len(name) > 64 {
         name = name[0:64]
       }
       tm := time.Unix(update.Message.Date, 0)
-      fmt.Printf("%d, %s: %s\n", update.UpdateID, name, update.Message.Text)
+      fmt.Printf("[%d] %s %s: %s\n", update.UpdateID, tm.Format("2006-01-02 15:04:05"), name, text)
       offset = update.UpdateID + 1
-      msg := pierc.Message{name, tm.Format("2006-01-02 15:04:05"), FilterEmoji(update.Message.Text)}
+      msg := pierc.Message{name, tm.Format("2006-01-02 15:04:05"), text}
       messageChannel<-msg
     }
     offsetWriterChannel<-offset
