@@ -25,6 +25,15 @@ func telegram_to_pierc(updateChannel <-chan *telegramapi.Update, messageChannel 
       document := message.Document
       text = strings.Join([]string{"[file:"+ document.MimeType +"]", noemoji.Noemojitize(document.FileName)}, " ")
     }
+    if message.Sticker.FileID != "" {
+      sticker := message.Sticker
+      val, ok := foxmosaStickerMap[sticker.FileID]
+      if ok {
+        text = "[foxmosa] " + val
+      } else {
+        text = "[sticker]" + sticker.FileID
+      }
+    }
     tm := time.Unix(update.Message.Date, 0).Format("2006-01-02 15:04:05")
     fmt.Printf("[%d] %s %s: %s\n", update.UpdateID, tm, name, text)
     msg := pierc.Message{name, tm, text}
