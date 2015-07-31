@@ -1,5 +1,5 @@
 
 all: foxmosa
 
-foxmosa: foxmosa.go offset.go
-	go build foxmosa.go offset.go
+foxmosa: foxmosa.go offset.go telegram_to_pierc.go
+	go build foxmosa.go offset.go telegram_to_pierc.go

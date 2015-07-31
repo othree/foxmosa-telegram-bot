@@ -18,26 +18,34 @@ type ProfileResult struct {
     Username string `json:"username"`
   } `json:"result"`
 }
+type Update struct {
+  UpdateID int `json:"update_id"`
+  Message struct {
+    MessageID int `json:"message_id"`
+    From struct {
+      ID int `json:"id"`
+      FirstName string `json:"first_name"`
+      LastName string `json:"last_name"`
+      Username string `json:"username"`
+    } `json:"from"`
+    Chat struct {
+      ID int `json:"id"`
+      Title string `json:"title"`
+    } `json:"chat"`
+    Date int64 `json:"date"`
+    Text string `json:"text"`
+    Photo []struct {
+      FileID string `json:"file_id"`
+      FileSize int `json:"file_size"`
+      Width int `json:"width"`
+      Height int `json:"height"`
+    } `json:"photo"`
+    Caption string `json:"caption"`
+  } `json:"message"`
+}
 type UpdateResult struct {
   Ok bool `json:"ok"`
-  Result []struct {
-    UpdateID int `json:"update_id"`
-    Message struct {
-      MessageID int `json:"message_id"`
-      From struct {
-        ID int `json:"id"`
-        FirstName string `json:"first_name"`
-        LastName string `json:"last_name"`
-        Username string `json:"username"`
-      } `json:"from"`
-      Chat struct {
-        ID int `json:"id"`
-        Title string `json:"title"`
-      } `json:"chat"`
-      Date int64 `json:"date"`
-      Text string `json:"text"`
-    } `json:"message"`
-  } `json:"result"`
+  Result []Update `json:"result"`
 }
 
 func fetch(url string) string {
@@ -66,14 +74,24 @@ func GetUpdates(api_key string, offset int) *UpdateResult {
   return result
 }
 
-func TrackingUpdates(uc chan<- *UpdateResult, oc <-chan int, api_key string) {
-  for offset := range oc {
-    uc <- GetUpdates(api_key, offset)
-    time.Sleep(5 * time.Second)
-  }
+var channels []chan<- *Update
+
+func MakeUpdatesChannel() chan *Update {
+  uc := make(chan *Update, 10)
+  channels = append(channels, uc)
+  return uc
 }
 
-func MakeUpdatesChannel() chan *UpdateResult {
-  return make(chan *UpdateResult, 10)
+func TrackingUpdates(api_key string, offset int) {
+  for {
+    updateResult := GetUpdates(api_key, offset)
+    for _, update  := range updateResult.Result {
+      for _, channel := range channels {
+        channel <- &update
+      }
+      offset = update.UpdateID + 1
+    }
+    time.Sleep(5 * time.Second)
+  }
 }
 

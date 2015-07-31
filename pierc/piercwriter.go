@@ -11,7 +11,7 @@ type Message struct {
   Text string
 }
 
-func Writer(schema string, mc <-chan Message) {
+func Writer(schema string, mc <-chan *Message) {
   db, err := sql.Open("mysql",  schema )
   if err != nil {
     panic(err)
