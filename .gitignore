@@ -20,4 +20,4 @@ coverage
 # node-waf configuration
 .lock-wscript
 
-config/config.go
+config.ini

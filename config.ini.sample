@@ -1,0 +1,9 @@
+
+[telegram]
+token = 
+
+[pierc]
+db_host = 
+db_user = root
+db_pass = 
+db_base = irc
