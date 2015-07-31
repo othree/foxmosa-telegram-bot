@@ -21,3 +21,5 @@ coverage
 .lock-wscript
 
 config.ini
+foxmosa
+offset
