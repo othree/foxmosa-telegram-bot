@@ -5,8 +5,6 @@ import (
   "./pierc"
   "github.com/othree/noemoji"
   "github.com/vaughan0/go-ini"
-  "io/ioutil"
-  "strconv"
   "strings"
   "time"
   "fmt"
@@ -15,6 +13,9 @@ import (
 func main() {
 
   config, err := ini.LoadFile("config.ini")
+  if err != nil {
+    panic("Config file not loaded.")
+  }
   token, ok := config.Get("telegram", "token")
   if !ok {
     panic("Telegram API token not available.")
@@ -42,14 +43,7 @@ func main() {
   updateChannel := telegramapi.MakeUpdatesChannel()
   go telegramapi.TrackingUpdates(updateChannel, offsetChannel, token)
 
-  var offset int = 0
-  data, err := ioutil.ReadFile("offset")
-  if err == nil {
-    offset, err = strconv.Atoi(string(data))
-    if err != nil {
-      offset = 0
-    }
-  }
+  offset := offsetInit()
   offsetChannel<-offset
   go offsetWriter(offsetWriterChannel)
 
