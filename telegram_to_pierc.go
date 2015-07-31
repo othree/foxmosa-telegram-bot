@@ -31,7 +31,7 @@ func telegram_to_pierc(updateChannel <-chan *telegramapi.Update, messageChannel 
       if ok {
         text = "[foxmosa] " + val
       } else {
-        text = "[sticker]" + sticker.FileID
+        text = "[sticker]"
       }
     }
     tm := time.Unix(update.Message.Date, 0).Format("2006-01-02 15:04:05")
