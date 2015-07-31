@@ -1,5 +1,5 @@
 
 all: foxmosa
 
-foxmosa: foxmosa.go
-	go build foxmosa.go
+foxmosa: foxmosa.go writeoffset.go
+	go build foxmosa.go writeoffset.go
