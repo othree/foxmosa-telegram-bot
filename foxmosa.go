@@ -3,39 +3,14 @@ package main
 import (
   "./config"
   "./telegramapi"
+  "./pierc"
+  "unicode/utf8"
   "io/ioutil"
   "strconv"
   "strings"
   "time"
   "fmt"
-  "database/sql"
 )
-import _ "github.com/go-sql-driver/mysql"
-
-type Message struct {
-  Name string
-  Time string
-  Text string
-}
-
-func dbWriter(mc <-chan Message) {
-  db, err := sql.Open("mysql",  config.DB_USER + ":" + config.DB_PASS + "@" + config.DB_HOST + "/" + config.DB_BASE )
-  if err != nil {
-    panic(err)
-  }
-  stmtIns, err := db.Prepare("INSERT INTO main (channel, name, time, message, type, hidden) VALUES( ?, ?, ?, ?, ?, ? )")
-  if err != nil {
-    panic(err)
-  }
-  defer stmtIns.Close()
-  for message := range mc {
-    _, err = stmtIns.Exec("moztw-telegram", message.Name, message.Time, message.Text, "pubmsg", "F")
-    if err != nil {
-      panic(err)
-    }
-  }
-}
-
 
 func offsetWriter(oc <-chan int) {
   for offset := range oc {
@@ -45,6 +20,18 @@ func offsetWriter(oc <-chan int) {
     }
   }
 }
+
+// http://maiyang.github.io/golang/%E5%AD%97%E7%AC%A6%E4%B8%B2/emoji/%E8%A1%A8%E6%83%85/2015/06/16/golang-character-length/
+func FilterEmoji(content string) string {
+    new_content := ""
+    for _, value := range content {
+        _, size := utf8.DecodeRuneInString(string(value))
+        if size <= 3 {
+            new_content += string(value)
+        }
+    }
+    return new_content
+  }
 
 func main() {
 
@@ -64,17 +51,20 @@ func main() {
   offsetChannel<-offset
   go offsetWriter(offsetWriterChannel)
 
-  messageChannel := make(chan Message)
-  go dbWriter(messageChannel)
+  messageChannel := make(chan pierc.Message)
+  go pierc.Writer(config.DB_USER + ":" + config.DB_PASS + "@" + config.DB_HOST + "/" + config.DB_BASE, messageChannel)
 
   for updateResult := range updateChannel {
     for _, update  := range updateResult.Result {
       author := update.Message.From
       name := strings.Join([]string{author.FirstName, author.LastName}, " ")
+      if len(name) > 64 {
+        name = name[0:64]
+      }
       tm := time.Unix(update.Message.Date, 0)
       fmt.Printf("%d, %s: %s\n", update.UpdateID, name, update.Message.Text)
       offset = update.UpdateID + 1
-      msg := Message{name, tm.Format("2006-01-02 15:04:05"), update.Message.Text}
+      msg := pierc.Message{name, tm.Format("2006-01-02 15:04:05"), FilterEmoji(update.Message.Text)}
       messageChannel<-msg
     }
     offsetWriterChannel<-offset
