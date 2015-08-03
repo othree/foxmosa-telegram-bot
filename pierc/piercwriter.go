@@ -13,6 +13,9 @@ type Message struct {
 
 func Writer(schema string, mc <-chan *Message) {
   db, err := sql.Open("mysql",  schema )
+  // https://github.com/go-sql-driver/mysql/issues/257#issuecomment-53886663
+  db.SetMaxIdleConns(0)
+
   if err != nil {
     panic(err)
   }
