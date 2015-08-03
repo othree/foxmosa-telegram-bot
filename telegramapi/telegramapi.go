@@ -48,10 +48,12 @@ func TrackingUpdates(api_key string, offset int) {
   for {
     updateResult := GetUpdates(api_key, offset)
     for _, update  := range updateResult.Result {
-      for _, channel := range channels {
-        channel <- &update
+      if update.UpdateID >= offset {
+        for _, channel := range channels {
+          channel <- &update
+        }
+        offset = update.UpdateID + 1
       }
-      offset = update.UpdateID + 1
     }
     time.Sleep(5 * time.Second)
   }

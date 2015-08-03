@@ -31,6 +31,6 @@ func telegram_to_offset(updateChannel <-chan *telegramapi.Update, offsetWriterCh
   offset := 0
   for update := range updateChannel {
     offset = update.UpdateID + 1
+    offsetWriterChannel<-offset
   }
-  offsetWriterChannel<-offset
 }

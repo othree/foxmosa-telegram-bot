@@ -34,7 +34,6 @@ func main() {
   }
 
 
-  offset := offsetInit()
   offsetWriterChannel := make(chan int, 10)
   go offsetWriter(offsetWriterChannel)
 
@@ -47,6 +46,6 @@ func main() {
   go telegram_to_pierc(telegramapi.MakeUpdatesChannel(), messageChannel)
 
 
-  telegramapi.TrackingUpdates(token, offset)
+  telegramapi.TrackingUpdates(token, offsetInit())
 
 }
