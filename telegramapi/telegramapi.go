@@ -39,7 +39,7 @@ func GetUpdates(api_key string, offset int) *UpdateResult {
 var channels []chan<- *Update
 
 func MakeUpdatesChannel() chan *Update {
-  uc := make(chan *Update, 10)
+  uc := make(chan *Update)
   channels = append(channels, uc)
   return uc
 }
