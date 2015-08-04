@@ -36,21 +36,21 @@ func GetUpdates(api_key string, offset int) *UpdateResult {
   return result
 }
 
-var channels []chan<- *Update
+var channels []chan<- Update
 
-func MakeUpdatesChannel() chan *Update {
-  uc := make(chan *Update)
+func MakeUpdatesChannel() chan Update {
+  uc := make(chan Update)
   channels = append(channels, uc)
   return uc
 }
 
-func TrackingUpdates(api_key string, offset int) {
+func TrackingUpdates(api_key string, chat_id int, offset int) {
   for {
     updateResult := GetUpdates(api_key, offset)
     for _, update  := range updateResult.Result {
-      if update.UpdateID >= offset {
+      if update.Message.Chat.ID == chat_id && update.UpdateID >= offset {
         for _, channel := range channels {
-          channel <- &update
+          channel <- update
         }
         offset = update.UpdateID + 1
       }

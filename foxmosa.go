@@ -50,7 +50,7 @@ func main() {
   go telegram_to_offset(telegramapi.MakeUpdatesChannel(), offsetWriterChannel)
 
 
-  messageChannel := make(chan *pierc.Message)
+  messageChannel := make(chan pierc.Message)
   go pierc.Writer(DB_USER + ":" + DB_PASS + "@tcp(" + DB_HOST + ":" + DB_PORT + ")/" + DB_BASE, messageChannel)
 
   go telegram_to_pierc(telegramapi.MakeUpdatesChannel(), messageChannel)

@@ -27,7 +27,7 @@ func offsetWriter(oc <-chan int) {
   }
 }
 
-func telegram_to_offset(updateChannel <-chan *telegramapi.Update, offsetWriterChannel chan<- int) {
+func telegram_to_offset(updateChannel <-chan telegramapi.Update, offsetWriterChannel chan<- int) {
   offset := 0
   for update := range updateChannel {
     offset = update.UpdateID + 1
