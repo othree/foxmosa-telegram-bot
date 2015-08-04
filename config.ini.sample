@@ -1,9 +1,11 @@
 
 [telegram]
 token = 
+chat_id = -123456
 
 [pierc]
 db_host = 
+db_port = 
 db_user = root
 db_pass = 
 db_base = irc
