@@ -25,7 +25,7 @@ func fetch(url string) string {
 }
 
 func GetUpdates(api_key string, offset int) *UpdateResult {
-  json_string := fetch("https://api.telegram.org/" + api_key + "/getUpdates?offset=" + strconv.Itoa(offset) )
+  json_string := fetch("https://api.telegram.org/bot" + api_key + "/getUpdates?offset=" + strconv.Itoa(offset) )
 
   dec := json.NewDecoder(strings.NewReader(json_string))
   result := new(UpdateResult)
