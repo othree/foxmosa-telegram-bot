@@ -13,7 +13,7 @@ func telegram_to_pierc(updateChannel <-chan telegramapi.Update, messageChannel c
   for update := range updateChannel {
     message := update.Message
     author := message.From
-    name := strings.TrimSpace(strings.Join([]string{author.FirstName, author.LastName}, " "))
+    name := noemoji.Noemojitize(strings.TrimSpace(strings.Join([]string{author.FirstName, author.LastName}, " ")))
     if len(name) > 64 {
       name = name[0:64]
     }
